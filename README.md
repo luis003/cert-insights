@@ -20,6 +20,31 @@ steer toward the domains you are weakest in.
 - **`/quiz`** — an on-demand 5-question drill weighted toward your weakest
   domains (`/quiz context` drills a single domain; keys below).
 
+## What it looks like
+
+You work normally. When your session does something the exam tests, Claude slips
+in one question at the next natural pause:
+
+> *[Claude just wired up an MCP server in your project]*
+>
+> Quick one while that sinks in — **Tool Design & MCP**: Claude calls a tool and
+> the API response has `stop_reason: "tool_use"`. What must your code do next?
+>
+> A. Retry the request with a higher `max_tokens`
+> B. Send a new message containing a `tool_result` block for each `tool_use` block
+> C. Wait for a webhook with the tool output
+> D. Nothing — the API executes the tool server-side
+>
+> **You:** B
+>
+> Correct — the API never executes tools; your code runs them and returns
+> `tool_result` blocks referencing each `tool_use` id. (D is the classic trap.)
+> `recorded: tools-mcp correct`
+
+That `recorded:` line is the tracking: your answer lands in a local log, and
+every future session reads it, steering questions toward whatever you keep
+getting wrong. Want a focused session instead? Run `/quiz`.
+
 ## Exam domains tracked
 
 | Domain | Weight | Record key |
