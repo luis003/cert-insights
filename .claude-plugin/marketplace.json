@@ -1,0 +1,13 @@
+{
+  "name": "cert-insights",
+  "owner": {
+    "name": "Luis Esquivel"
+  },
+  "plugins": [
+    {
+      "name": "cert-insights",
+      "source": "./plugin",
+      "description": "Study for the Claude Certified Architect - Foundations exam while you work: impromptu exam-style questions triggered by what your session actually does, with per-domain familiarity tracking that steers questions toward your weak spots."
+    }
+  ]
+}
