@@ -27,7 +27,7 @@ in one question at the next natural pause:
 
 > *[Claude just wired up an MCP server in your project]*
 >
-> Quick one while that sinks in — **Tool Design & MCP**: Claude calls a tool and
+> Quick one while that sinks in, **Tool Design & MCP Integration**: Claude calls a tool and
 > the API response has `stop_reason: "tool_use"`. What must your code do next?
 >
 > A. Retry the request with a higher `max_tokens`
@@ -39,7 +39,7 @@ in one question at the next natural pause:
 >
 > Correct — the API never executes tools; your code runs them and returns
 > `tool_result` blocks referencing each `tool_use` id. (D is the classic trap.)
-> `recorded: tools-mcp correct`
+> `recorded: tools-mcp correct (1.1)`
 
 That `recorded:` line is the tracking: your answer lands in a local log, and
 every future session reads it, steering questions toward whatever you keep
@@ -47,19 +47,36 @@ getting wrong. Want a focused session instead? Run `/quiz`.
 
 ## Exam domains tracked
 
-| Domain | Weight | Record key |
-|---|---|---|
-| Agentic Architecture & Orchestration | 27% | `agentic` |
-| Claude Code | 20% | `claude-code` |
-| Prompt Engineering | 20% | `prompting` |
-| Tool Design & MCP | 18% | `tools-mcp` |
-| Context Management | 15% | `context` |
+| # | Domain | Weight | Record key |
+|---|---|---|---|
+| 1 | Agentic Architecture & Orchestration | 27% | `agentic` |
+| 2 | Tool Design & MCP Integration | 18% | `tools-mcp` |
+| 3 | Claude Code Configuration & Workflows | 20% | `claude-code` |
+| 4 | Prompt Engineering & Structured Output | 20% | `prompting` |
+| 5 | Context Management & Reliability | 15% | `context` |
 
-Weights are from third-party exam guides (freeCodeCamp, community study repos),
-not Anthropic. The authoritative exam guide is in your Anthropic Academy account —
-if it disagrees, edit the domain list in
-[`plugin/hooks-handlers/session-start.sh`](plugin/hooks-handlers/session-start.sh)
-and validate with `bash plugin/hooks-handlers/session-start.sh | python -m json.tool`.
+Domains and weights are taken from the official **Claude Certified Architect -
+Foundations Exam Guide, version 1.0, effective July 2026, exam code CCAR-F**
+(reconciled 2026-09-19). The 30 task statements under these domains, the six exam
+scenarios, and the official out-of-scope list live in
+[`plugin/reference/blueprint.md`](plugin/reference/blueprint.md), which the
+session-start hook references by path rather than inlining, so it is loaded only
+when a question needs it.
+
+Answers are recorded per domain *and* per objective
+(`record.sh <domain-key> <correct|wrong> [objective-id]`), and both the hook and
+`/quiz` prefer objectives with no recorded attempt over ones already covered.
+
+If a newer exam guide disagrees, edit
+[`plugin/reference/blueprint.md`](plugin/reference/blueprint.md) and the domain
+list in
+[`plugin/hooks-handlers/session-start.sh`](plugin/hooks-handlers/session-start.sh),
+then validate with
+`bash plugin/hooks-handlers/session-start.sh | python -m json.tool`.
+
+Note: prompt caching implementation detail and token counting specifics are
+**out of scope** for this exam, so the plugin no longer asks about them. See
+[CHANGELOG.md](CHANGELOG.md).
 
 ## Install
 
@@ -87,15 +104,19 @@ standard Git for Windows install). macOS/Linux work out of the box.
 
 ## How it works
 
-Three small parts, no dependencies:
+Four small parts, no dependencies:
 
 1. A `SessionStart` hook ([session-start.sh](plugin/hooks-handlers/session-start.sh))
-   computes per-domain scores from the answer log and emits quiz-mode instructions
-   as `additionalContext` — the same mechanism as Anthropic's official
-   `explanatory-output-style` plugin, which this descends from.
-2. A recorder ([record.sh](plugin/scripts/record.sh)) that Claude runs after each
-   answered question, appending one JSONL line.
-3. The [`/quiz`](plugin/commands/quiz.md) command for deliberate drills.
+   computes per-domain scores and attempted objectives from the answer log and emits
+   quiz-mode instructions as `additionalContext` — the same mechanism as Anthropic's
+   official `explanatory-output-style` plugin, which this descends from.
+2. A blueprint ([blueprint.md](plugin/reference/blueprint.md)) holding the official
+   domains, the 30 task statements and the out-of-scope list. Referenced by path from
+   the hook, so it is read only when a question needs a specific objective.
+3. A recorder ([record.sh](plugin/scripts/record.sh)) that Claude runs after each
+   answered question, appending one JSONL line with the domain, the result and the
+   objective id.
+4. The [`/quiz`](plugin/commands/quiz.md) command for deliberate drills.
 
 ## Disclaimer
 

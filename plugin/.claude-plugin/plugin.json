@@ -1,7 +1,7 @@
 {
   "name": "cert-insights",
-  "version": "0.2.0",
-  "description": "CCA-Foundations exam prep in the background: contextual exam-style questions with per-domain familiarity tracking. Mechanism descends from Anthropic's explanatory-output-style plugin.",
+  "version": "0.3.0",
+  "description": "CCA-Foundations exam prep in the background: contextual exam-style questions tracked against the official CCAR-F blueprint, per domain and per objective. Mechanism descends from Anthropic's explanatory-output-style plugin.",
   "author": {
     "name": "Luis Esquivel"
   }
